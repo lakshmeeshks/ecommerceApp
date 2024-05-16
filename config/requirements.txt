@@ -9,7 +9,7 @@ Flask-SQLAlchemy==2.5.1
 python-dotenv==0.20.0
 
 # Runtime tools
-gunicorn==20.1.0
+gunicorn==22.0.0
 honcho==1.1.0
 
 # Code quality
