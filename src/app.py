@@ -69,6 +69,7 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
+
 if __name__ == '__main__':
     app.app_context().push()
     db.create_all()
