@@ -27,3 +27,4 @@ httpie==3.2.1
 
 pyodbc
 openai
+docker
