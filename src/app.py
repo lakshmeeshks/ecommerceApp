@@ -5,9 +5,7 @@ from openai import OpenAI
 import os
 import sqlite3
 
-#client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
-
-client = OpenAI(api_key='sk-proj-RvOKiEsePSHvYhL5enmnT3BlbkFJNodqtgv3HOCZVBRo3T2c')
+client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sha256'
