@@ -30,7 +30,9 @@ jobs:
 #      - name: Run unit tests with nose
 #        run:
 #          nosetests -v --with-spec --spec-color --with-coverage --cover-package=app
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
       - name: Build Docker Image
         run: |
           docker build -t my-flask-app ./config/.
-          
+      
