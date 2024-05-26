@@ -1,11 +1,19 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
+from openai import OpenAI
+import os
+import sqlite3
+
+#client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+client = OpenAI(api_key='sk-proj-RvOKiEsePSHvYhL5enmnT3BlbkFJNodqtgv3HOCZVBRo3T2c')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sha256'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
+
 
 
 class User(db.Model):
@@ -14,7 +22,32 @@ class User(db.Model):
     email = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+def init_db():
+    conn = sqlite3.connect('knowledge_base.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS knowledge (
+                    id INTEGER PRIMARY KEY,
+                    question TEXT NOT NULL,
+                    answer TEXT NOT NULL
+                 )''')
+    conn.commit()
+    conn.close()
 
+@app.before_request
+def initialize():
+    init_db()
+
+######################################################################
+# H E A L T H   C H E C K
+######################################################################
+@app.route("/health")
+def healthcheck():
+    """Let them know our heart is still beating"""
+    return jsonify(status=200, message="OK"), status.HTTP_200_OK
+
+######################################################################
+# H O M E   P A G E
+######################################################################
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -69,6 +102,73 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('home'))
 
+######################################################################
+# C R E A T E   A   N E W   P R O D U C T
+######################################################################
+@app.route("/generate", methods=["POST"])
+def generate_text():
+    """
+    Creates a Product
+    This endpoint will create a Product based the data in the body that is posted
+    """
+
+    data = request.get_json()
+
+    if 'prompt' not in data:
+        return jsonify({'error': 'No prompt provided'}), 400
+
+    prompt = data['prompt']
+    print(data)
+    try:
+        print("Before respnse")
+        response = client.completions.create(model="gpt-3.5-turbo", #text-davinci-004",  # or another model like "gpt-4"
+        prompt=prompt,
+        max_tokens=150)
+        print(response.dict)
+
+        return jsonify({
+            'prompt': prompt,
+            'response': response.choices[0].text.strip()
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+    # app.logger.info("Request to Create a Product...")
+    #
+    # data = request.get_json()
+    # app.logger.info("Processing: %s", data)
+    # product = Product()
+    # product.deserialize(data)
+    # product.create()
+    # app.logger.info("Product with new id [%s] saved!", product.id)
+    #
+    # message = product.serialize()
+    #
+    # location_url = url_for("get_products", product_id=product.id, _external=True)
+    # # location_url = "/"  # delete once READ is implemented
+    # return jsonify(message), status.HTTP_201_CREATED, {"Location": location_url}
+@app.route("/generate/<prompt>", methods=["GET"])
+def generate_text_get(prompt):
+    """
+    Creates a Product
+    This endpoint will create a Product based the data in the body that is posted
+    """
+
+    try:
+        response = client.chat.completions.create(model="gpt-3.5-turbo", #text-davinci-004",  # or another model like "gpt-4"
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=150)
+        print(response.dict)
+
+        return jsonify({
+            'prompt': prompt,
+            'response': response.choices[0].text.strip()
+        })
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.app_context().push()

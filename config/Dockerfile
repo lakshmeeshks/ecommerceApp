@@ -11,6 +11,7 @@ COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --upgrade Flask Werkzeug Flask-SQLAlchemy
+RUN pip install Flask pyodbc openai
 
 RUN rm -f requirements.txt
 # Clone the repository (replace with your repository URL)
