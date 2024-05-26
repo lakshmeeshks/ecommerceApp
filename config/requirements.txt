@@ -1,5 +1,5 @@
 Flask==2.1.2
-Werkzeug==2.1.2
+Werkzeug==3.0.3
 Flask-SQLAlchemy==2.5.1
 
 # Werkzeug keeps breaking Flask!
