@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from openai import OpenAI
 import os
 import sqlite3
+import status
 
 client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
@@ -11,8 +12,6 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sha256'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 db = SQLAlchemy(app)
-
-
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
