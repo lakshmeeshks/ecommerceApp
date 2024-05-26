@@ -4,8 +4,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 # from openai import OpenAI
 # import os
 import sqlite3
-import status
 
+# class Status(enum.Enum):
+#     HTTP_200_OK = 200
+#     HTTP_201_CREATED = 201
 # client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 app = Flask(__name__)
@@ -40,7 +42,7 @@ class User(db.Model):
 @app.route("/health")
 def healthcheck():
     """Let them know our heart is still beating"""
-    return jsonify(status=200, message="OK"), status.HTTP_200_OK
+    return jsonify(status=200, message="OK"), 200
 
 ######################################################################
 # H O M E   P A G E
