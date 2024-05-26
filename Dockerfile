@@ -7,7 +7,7 @@ RUN apt-get update && apt-get install -y git
 # Set the working directory in the container
 WORKDIR /app
 
-COPY requirements.txt .
+COPY config/requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --upgrade Flask Werkzeug Flask-SQLAlchemy
